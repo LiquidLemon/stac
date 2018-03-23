@@ -1,3 +1,5 @@
+# TODO : Dodać komentarz nagłówkowy
+
 import requests
 import platform
 import re
@@ -22,6 +24,7 @@ class Session:
             + platform.linux_distribution()[1]
             lx_ver = 'Linux ' + platform.release()
             self.user_agent += ' (' + lx_dist + '; ' + lx_ver + ')'
+        # TODO : macOS i FreeBSD
 
         r = self.__post({'p': 'login'}, {'login': username, 'password': password})
         if 'Wylogowanie' not in r.text:
