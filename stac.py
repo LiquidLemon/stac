@@ -99,7 +99,7 @@ def list_problems(repo_path, sid) :
     config = _read_config(repo_path)
     username, password = _get_credentials(repo_path, config)
     sess = stos.Session(username, password)
-    
+
     for excercise in sess.get_excercises(stos.Subject(sid)) :
         print('» ' + excercise.title)
         print()
@@ -109,12 +109,12 @@ def list_problems(repo_path, sid) :
             rows.append([
                 problem.nr,
                 problem.title,
-                problem.id, 
+                problem.id,
                 problem.result,
                 problem.points,
                 problem.deadline
             ])
-        
+
         print(tabulate(rows, headers=[
             'Nr', 'Zadanie', 'ID', 'Wynik', 'Punkty', 'Termin']))
         print()

@@ -73,10 +73,10 @@ class Session:
                         points=int(tds[4].contents[0]),
                         deadline=datetime.datetime.strptime(tds[5].contents[0], '%Y-%m-%d %H:%M:%S') if len(tds[5].contents) else None
                     ))
-                    
+
         if len(excercise.problems) :
             excercises.append(excercise)
-        
+
         return excercises
 
 
