@@ -1,4 +1,4 @@
-# TODO : Dodać komentarz nagłówkowy
+# TODO: Dodać komentarz nagłówkowy
 
 import requests
 import platform
@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 
 broker_url = 'https://kaims.eti.pg.gda.pl/~kmocet/stos/index.php'
 
+
 class Session:
     hts = []
     user_agent = 'STAC/0.1'
@@ -16,20 +17,23 @@ class Session:
     def __init__(self, username, password):
         self.hts = requests.Session()
 
+        # TODO: use `distro` for version checking since some of the methods used
+        # here are deprecated
         if platform.system() == 'Windows':
-            win_ver = 'NT' + re.compile(r"\d+\.\d+").match(platform.win32_ver()[1]).group(0)
-            self.user_agent += ' (Windows ' + win_ver + ')'
+            version_pattern = re.compile(r"\d+\.\d+")
+            win_ver = version_pattern.match(platform.win32_ver()[1]).group(0)
+            self.user_agent += ' (Windows NT' + win_ver + ')'
         elif platform.system() == 'Linux':
             lx_dist = platform.linux_distribution()[0] + ' ' \
-            + platform.linux_distribution()[1]
+                + platform.linux_distribution()[1]
             lx_ver = 'Linux ' + platform.release()
             self.user_agent += ' (' + lx_dist + '; ' + lx_ver + ')'
-        # TODO : macOS i FreeBSD
+        # TODO: macOS i FreeBSD
 
-        r = self.__post({'p': 'login'}, {'login': username, 'password': password})
+        params = {'login': username, 'password': password}
+        r = self.__post({'p': 'login'}, params)
         if 'Wylogowanie' not in r.text:
             raise PermissionError('Login unsucessful')
-
 
     def get_subjects(self):
         resp = self.__get({'p': 'przedmioty'})
@@ -37,7 +41,7 @@ class Session:
 
         subjects = []
         patt_id = re.compile('id=(\d+)')
-        for subject in soup.find('table').find_all('a') :
+        for subject in soup.find('table').find_all('a'):
             subjects.append(Subject(
                 title=subject.contents[0],
                 id=int(re.search(patt_id, subject['href']).group(1))
@@ -52,9 +56,9 @@ class Session:
         excercise = Excercise('', [])
         patt_id = re.compile('id=(\d+)')
         patt_result = re.compile('>(\d+\.\d+%)<')
-        for tr in soup.find('table').find_all('tr') :
-            if tr['class'][0] == 'seprow' :
-                if len(excercise.problems) :
+        for tr in soup.find('table').find_all('tr'):
+            if tr['class'][0] == 'seprow':
+                if len(excercise.problems):
                     excercises.append(Excercise(
                         excercise.title,
                         excercise.problems
@@ -62,38 +66,44 @@ class Session:
                     excercise.problems = []
                 excercise.title = tr.td.span.contents[0]
 
-            else :
+            else:
                 tds = tr.find_all('td')
-                if len(tds) :
+                if len(tds[5].conentes) > 0:
+                    deadline = datetime.datetime.strptime(
+                        tds[5].contents[0], '%Y-%m-%d %H:%M:%S'
+                    )
+                else:
+                    deadline = None
+
+                if len(tds):
                     excercise.problems.append(Problem(
                         nr=int(tds[0].contents[0]),
                         title=tds[1].a.contents[0],
                         id=int(re.search(patt_id, tds[1].a['href']).group(1)),
                         result=tds[3].a.contents[0] if tds[3].a else '',
                         points=int(tds[4].contents[0]),
-                        deadline=datetime.datetime.strptime(tds[5].contents[0], '%Y-%m-%d %H:%M:%S') if len(tds[5].contents) else None
+                        deadline=deadline
                     ))
 
-        if len(excercise.problems) :
+        if len(excercise.problems):
             excercises.append(excercise)
 
         return excercises
-
 
     def __get(self, params):
         return self.hts.get(broker_url,
                             params=params,
                             verify=False,
-                            headers={'user-agent' : self.user_agent}
+                            headers={'user-agent': self.user_agent}
                             )
 
-    def __post(self, params, data = None, files = None):
+    def __post(self, params, data=None, files=None):
         return self.hts.post(broker_url,
                              params=params,
                              data=data,
                              files=files,
                              verify=False,
-                             headers={'user-agent' : self.user_agent}
+                             headers={'user-agent': self.user_agent}
                              )
 
 
@@ -101,7 +111,7 @@ class Subject:
     title = ''
     id = 0
 
-    def __init__(self, id, title = None):
+    def __init__(self, id, title=None):
         self.title = title
         self.id = id
 
