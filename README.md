@@ -1,4 +1,4 @@
-# stac
+# 📚 stac
 
 STOS Testing and Assessment Client
 
@@ -14,5 +14,16 @@ STOS Testing and Assessment Client
     (-5+7)?            (_ɩ_ɩ_+        1)/2:-
     (7+8+4)*(_ɩ_ɩ_+21  -37-1+2        *2*2*2
     )),stdout-21/37+ὢ  );{;;};        {;;;;}
-    
+
                   ¯ا_(ὢ)_ا¯
+
+## Development
+
+Use [Pipenv](https://docs.pipenv.org/) to add any dependencies and run the
+application.
+
+To install all dependencies use `pipenv install -d`.
+
+Run all commands from inside the Pipenv virtual environment (`pipenv shell`).
+
+Use `pycodestyle` to check your code.
