@@ -116,6 +116,9 @@ class Subject:
         self.title = title
         self.id = id
 
+    def get_fields(self):
+        return [self.title, self.id]
+
 
 class Exercise:
     title = ''
@@ -125,6 +128,8 @@ class Exercise:
         self.title = title
         self.problems = problems
 
+    def get_fields(self):
+        return [self.title, self.problems]
 
 class Problem:
     nr = 0
@@ -141,3 +146,14 @@ class Problem:
         self.result = result
         self.points = points
         self.deadline = deadline
+
+    def get_fields(self):
+        return [
+            self.nr,
+            self.title,
+            self.id,
+            self.result,
+            self.points,
+            self.deadline
+        ]
+

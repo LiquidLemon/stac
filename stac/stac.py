@@ -79,15 +79,8 @@ def list_subjects(repo_path):
     username, password = _get_credentials(repo_path, config)
     sess = stos.Session(username, password)
 
-    idx = 1
-    rows = []
-    for subject in sess.get_subjects():
-        rows.append([
-            idx,
-            subject.title,
-            subject.id
-        ])
-        idx = idx + 1
+    subjects = enumerate(sess.get_subjects(), start=1)
+    rows = [[i, *subject.get_fields()] for i, subject in subjects]
 
     echo(tabulate(rows, headers=['Nr.', 'Subject', 'ID']))
     echo()
@@ -104,16 +97,7 @@ def list_problems(repo_path, sid):
         echo(colorama.Style.BRIGHT + '» ' + exercise.title)
         echo(colorama.Style.RESET_ALL)
 
-        rows = []
-        for problem in exercise.problems:
-            rows.append([
-                problem.nr,
-                problem.title,
-                problem.id,
-                problem.result,
-                problem.points,
-                problem.deadline
-            ])
+        rows = [problem.get_fields() for problem in exercise.problems]
 
         print(tabulate(rows, headers=[
             'Nr.', 'Problem title', 'ID', 'Result', 'Points', 'Deadline']))
