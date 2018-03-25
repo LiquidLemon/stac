@@ -17,26 +17,24 @@ class Session:
     def __init__(self, username, password):
         self.hts = requests.Session()
 
-        # TODO: use `distro` for version checking since some of the methods used
-        # here are deprecated
         if platform.system() == 'Windows':
             version_pattern = re.compile(r"\d+\.\d+")
             win_ver = version_pattern.match(platform.win32_ver()[1]).group(0)
             self.user_agent += ' (Windows NT' + win_ver + ')'
+
         elif platform.system() == 'Linux':
-            lx_dist = platform.linux_distribution()[0] + ' ' \
-                + platform.linux_distribution()[1]
+            lx_dist = platform.dist()[0] + ' ' + platform.dist()[1]
             lx_ver = 'Linux ' + platform.release()
             self.user_agent += ' (' + lx_dist + '; ' + lx_ver + ')'
         # TODO: macOS i FreeBSD
 
         params = {'login': username, 'password': password}
-        r = self.__post({'p': 'login'}, params)
+        r = self._post({'p': 'login'}, params)
         if 'Wylogowanie' not in r.text:
             raise PermissionError('Login unsucessful')
 
     def get_subjects(self):
-        resp = self.__get({'p': 'przedmioty'})
+        resp = self._get({'p': 'przedmioty'})
         soup = BeautifulSoup(resp.content)
 
         subjects = []
@@ -48,26 +46,29 @@ class Session:
             ))
         return subjects
 
-    def get_excercises(self, subject):
-        resp = self.__get({'p': 'viewprzedmiot', 'id': subject.id})
+    def get_exercises(self, subject):
+        resp = self._get({'p': 'viewprzedmiot', 'id': subject.id})
         soup = BeautifulSoup(resp.content)
 
-        excercises = []
-        excercise = Excercise('', [])
+        exercises = []
+        exercise = Exercise('', [])
         patt_id = re.compile('id=(\d+)')
         patt_result = re.compile('>(\d+\.\d+%)<')
         for tr in soup.find('table').find_all('tr'):
             if tr['class'][0] == 'seprow':
-                if len(excercise.problems):
-                    excercises.append(Excercise(
-                        excercise.title,
-                        excercise.problems
+                if len(exercise.problems):
+                    exercises.append(Exercise(
+                        exercise.title,
+                        exercise.problems
                     ))
-                    excercise.problems = []
-                excercise.title = tr.td.span.contents[0]
+                    exercise.problems = []
+                exercise.title = tr.td.span.contents[0]
 
             else:
                 tds = tr.find_all('td')
+                if(len(tds) == 0):
+                    continue
+
                 if len(tds[5].contents) > 0:
                     deadline = datetime.datetime.strptime(
                         tds[5].contents[0], '%Y-%m-%d %H:%M:%S'
@@ -76,7 +77,7 @@ class Session:
                     deadline = None
 
                 if len(tds):
-                    excercise.problems.append(Problem(
+                    exercise.problems.append(Problem(
                         nr=int(tds[0].contents[0]),
                         title=tds[1].a.contents[0],
                         id=int(re.search(patt_id, tds[1].a['href']).group(1)),
@@ -85,19 +86,19 @@ class Session:
                         deadline=deadline
                     ))
 
-        if len(excercise.problems):
-            excercises.append(excercise)
+        if len(exercise.problems):
+            exercises.append(exercise)
 
-        return excercises
+        return exercises
 
-    def __get(self, params):
+    def _get(self, params):
         return self.hts.get(broker_url,
                             params=params,
                             verify=False,
                             headers={'user-agent': self.user_agent}
                             )
 
-    def __post(self, params, data=None, files=None):
+    def _post(self, params, data=None, files=None):
         return self.hts.post(broker_url,
                              params=params,
                              data=data,
@@ -116,7 +117,7 @@ class Subject:
         self.id = id
 
 
-class Excercise:
+class Exercise:
     title = ''
     problems = []
 

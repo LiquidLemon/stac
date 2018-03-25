@@ -20,7 +20,7 @@ logging.captureWarnings(True)
 
 
 # GENERAL HELPER FUNCTIONS #
-# TODO: Może zrobić to inaczej, nie globalną funkcją narzędziową?
+# TODO: find another, probably better, way to report failures
 def _fatal(message):
     echo('fatal: ' + message, err=True)
     sys.exit(1)
@@ -35,7 +35,9 @@ def _config_path(repo_path):
 
 
 # CONFIGURATION #
-# TODO: Czy ogarnianie tego poprzez globalne funkcje jest ładne?
+# TODO: move configuration routines to another module
+#       separate global and workspace settings
+#       rebuild credentials storage routines
 def _read_config(repo_path):
     config = configparser.ConfigParser()
     try:
@@ -71,7 +73,7 @@ def _get_credentials(repo_path, config):
 
 # COMMAND HANDLERS #
 def list_subjects(repo_path):
-    # TODO: Procedura konfiguracja-autoryzacja-sesja będzie się powtarzać
+    # TODO: config-auth-session procedure WILL repeat in another commands
     config = _read_config(repo_path)
     username, password = _get_credentials(repo_path, config)
     sess = stos.Session(username, password)
@@ -86,23 +88,23 @@ def list_subjects(repo_path):
         ])
         idx = idx + 1
 
-    echo(tabulate(rows, headers=['Nr', 'Przedmiot', 'ID']))
+    echo(tabulate(rows, headers=['Nr.', 'Subject', 'ID']))
     echo()
     echo()
 
 
 def list_problems(repo_path, sid):
-    # TODO: Procedura konfiguracja-autoryzacja-sesja będzie się powtarzać
+    # TODO: config-auth-session procedure WILL repeat in another commands
     config = _read_config(repo_path)
     username, password = _get_credentials(repo_path, config)
     sess = stos.Session(username, password)
 
-    for excercise in sess.get_excercises(stos.Subject(sid)):
-        echo('» ' + excercise.title)
+    for exercise in sess.get_exercises(stos.Subject(sid)):
+        echo('» ' + exercise.title)
         echo()
 
         rows = []
-        for problem in excercise.problems:
+        for problem in exercise.problems:
             rows.append([
                 problem.nr,
                 problem.title,
@@ -113,7 +115,7 @@ def list_problems(repo_path, sid):
             ])
 
         print(tabulate(rows, headers=[
-            'Nr', 'Zadanie', 'ID', 'Wynik', 'Punkty', 'Termin']))
+            'Nr.', 'Problem title', 'ID', 'Result', 'Points', 'Deadline']))
         print()
         print()
 
@@ -150,8 +152,8 @@ def cli():
 @cli.command()
 @click.argument('path', default=os.getcwd())
 def init(path):
-    """Initialize the directory for use with stac."""
-    # TODO: O ile dobrze pamiętam, ma być potem inny moduł do koniguracji
+    """Initialize the directory as STAC workspace."""
+    # TODO: rebuild configuration routines
     os.makedirs(_stac_path(path), exist_ok=True)
     with open(_config_path(path), 'w') as configfile:
         config = configparser.ConfigParser()
@@ -169,6 +171,7 @@ def list(subject):
             list_subjects(cwd)
         else:
             list_problems(cwd, subject)
+
     except requests.exceptions.ConnectionError:
         # TODO: provide more information on failure
         _fatal('Connection error')
