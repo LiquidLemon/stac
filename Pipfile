@@ -10,6 +10,7 @@ pycodestyle = "*"
 keyring = "*"
 tabulate = "*"
 "beautifulsoup4" = "*"
+colorama = "*"
 requests = "*"
 click = "*"
 dbus-python = {version = "*", sys_platform = "== 'linux'"}

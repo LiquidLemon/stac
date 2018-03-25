@@ -10,6 +10,7 @@ import getpass
 import keyring
 from bs4 import BeautifulSoup
 from tabulate import tabulate
+import colorama
 import requests
 import click
 from click import echo
@@ -100,8 +101,8 @@ def list_problems(repo_path, sid):
     sess = stos.Session(username, password)
 
     for exercise in sess.get_exercises(stos.Subject(sid)):
-        echo('» ' + exercise.title)
-        echo()
+        echo(colorama.Style.BRIGHT + '» ' + exercise.title)
+        echo(colorama.Style.RESET_ALL)
 
         rows = []
         for problem in exercise.problems:
@@ -127,23 +128,23 @@ CLICK_SETTINGS = {
 
 @click.group(context_settings=CLICK_SETTINGS)
 def cli():
-    """Browse problems and submit solutions for the STOS platform.
+    """Browse problems and submit solutions for the STOS platform.\033[1;37m
 
     \b
-    #define/***/  ˂ɺʘДʘ˃ɺ/*2018*/long/**/int
-    /**/#include  <stdio.h>/**STOS Client**/
+    #define/***/  ˂ɺʘДʘ˃ɺ/*2018*/long/\033[22;36m**/int\033[1;37m
+    /**/#include  <stdio.h>/**STOS Cli\033[22;36ment**/\033[1;37m
     #define            ¯I_/**/        return
     /*M*J*/            ˂ɺʘДʘ˃ɺ        main()
     #define            ὢ/***/(        5/100)
     #define/*M**K*/    /**/_I¯        ;;;};;
-    {˂ɺʘДʘ˃ɺ/****/v    =8*4*2*        1;for(      ˂ɺʘДʘ˃ɺ _ɩ_ɩ_
+    {˂ɺʘДʘ˃ɺ/****/v    =8*4*2*        1;for(      \033[31m˂ɺʘДʘ˃ɺ _ɩ_ɩ_\033[37m
     =ὢ*ὢ*1;            _ɩ_ɩ_<5        ;_ɩ_ɩ_
     ++)putc            ((*&v+=        _ɩ_ɩ_%
     (-5+7)?            (_ɩ_ɩ_+        1)/2:-
     (7+8+4)*(_ɩ_ɩ_+21  -37-1+2        *2*2*2
     )),stdout-21/37+ὢ  );{;;};        {;;;;}
 
-                      ¯I_(ὢ)_I¯
+                      \033[32m¯I_(ὢ)_I¯\033[m
 
     """
     pass
@@ -178,4 +179,5 @@ def list(subject):
 
 
 if __name__ == '__main__':
+    colorama.init(autoreset=True)
     cli()
