@@ -27,3 +27,9 @@ To install all dependencies use `pipenv install -d`.
 Run all commands from inside the Pipenv virtual environment (`pipenv shell`).
 
 Use `pycodestyle` to check your code.
+
+### Linux
+
+Storing credentials with keyring requires native bindings for dbus. To build
+those you need `dbus-glib` development library. On Ubuntu you can find it in the
+package `libdbus-glib-1-dev`.
