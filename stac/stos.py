@@ -68,7 +68,7 @@ class Session:
 
             else:
                 tds = tr.find_all('td')
-                if len(tds[5].conentes) > 0:
+                if len(tds[5].contents) > 0:
                     deadline = datetime.datetime.strptime(
                         tds[5].contents[0], '%Y-%m-%d %H:%M:%S'
                     )

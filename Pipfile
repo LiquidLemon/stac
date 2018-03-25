@@ -14,5 +14,7 @@ keyring = "*"
 tabulate = "*"
 "beautifulsoup4" = "*"
 requests = "*"
+click = "*"
 dbus-python = {version = "*", sys_platform = "== 'linux'"}
 secretstorage = {version = "*", sys_platform = "== 'linux'"}
+

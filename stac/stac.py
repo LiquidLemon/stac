@@ -3,17 +3,16 @@
 import os
 from os import path
 import sys
-
 import logging
 
 import configparser
 import getpass
 import keyring
-
 from bs4 import BeautifulSoup
 from tabulate import tabulate
-
 import requests
+import click
+from click import echo
 
 import stos
 
@@ -23,7 +22,7 @@ logging.captureWarnings(True)
 # GENERAL HELPER FUNCTIONS #
 # TODO: Może zrobić to inaczej, nie globalną funkcją narzędziową?
 def _fatal(message):
-    print('fatal: ' + message, file=sys.stderr)
+    echo('fatal: ' + message, err=True)
     sys.exit(1)
 
 
@@ -71,15 +70,6 @@ def _get_credentials(repo_path, config):
 
 
 # COMMAND HANDLERS #
-def init(repo_path):
-    # TODO: O ile dobrze pamiętam, ma być potem inny moduł do koniguracji
-    os.makedirs(_stac_path(repo_path), exist_ok=True)
-    with open(_config_path(repo_path), 'w') as configfile:
-        config = configparser.ConfigParser()
-        config['STAC'] = {}
-        config.write(configfile)
-
-
 def list_subjects(repo_path):
     # TODO: Procedura konfiguracja-autoryzacja-sesja będzie się powtarzać
     config = _read_config(repo_path)
@@ -96,9 +86,9 @@ def list_subjects(repo_path):
         ])
         idx = idx + 1
 
-    print(tabulate(rows, headers=['Nr', 'Przedmiot', 'ID']))
-    print()
-    print()
+    echo(tabulate(rows, headers=['Nr', 'Przedmiot', 'ID']))
+    echo()
+    echo()
 
 
 def list_problems(repo_path, sid):
@@ -108,8 +98,8 @@ def list_problems(repo_path, sid):
     sess = stos.Session(username, password)
 
     for excercise in sess.get_excercises(stos.Subject(sid)):
-        print('» ' + excercise.title)
-        print()
+        echo('» ' + excercise.title)
+        echo()
 
         rows = []
         for problem in excercise.problems:
@@ -128,40 +118,61 @@ def list_problems(repo_path, sid):
         print()
 
 
-def usage():
-    messages = [
-        "usage: {} <command> <args>",
-        "example: {} init          # zainicjalizuj przestrzeń roboczą",
-        "example: {} list subjects # wyświetl listę przedmiotów",
-        "example: {} list 365      # wyświetl zadania na przedmiot 365"
-    ]
-
-    cmd = sys.argv[0]
-
-    for message in messages:
-        print(message.format(cmd), file=sys.stderr)
+CLICK_SETTINGS = {
+    'help_option_names': ['-h', '--help']
+}
 
 
-# ENTRY POINT #
-if __name__ == '__main__':
-    # TODO: Obsługa argumentów linii poleceń ma być upiększona później
+@click.group(context_settings=CLICK_SETTINGS)
+def cli():
+    """Browse problems and submit solutions for the STOS platform.
+
+    \b
+    #define/***/ （ɺʘДʘ）ɺ/*2018*/long/**/int
+    /**/#include  <stdio.h>/**STOS Client**/
+    #define            ¯ا_/**/        return
+    /*M*J*/           （ɺʘДʘ）ɺ        main()
+    #define            ὢ/**/(         5/100)
+    #define/*M**K*/    /**/_ا¯        ;;;};;
+    {（ɺʘДʘ）ɺ/****/v   =8*4*2*        1;for(      （ɺʘДʘ）ɺ _ɩ_ɩ_
+    =ὢ*ὢ*1;            _ɩ_ɩ_<5        ;_ɩ_ɩ_
+    ++)putc            ((*&v+=        _ɩ_ɩ_%
+    (-5+7)?            (_ɩ_ɩ_+        1)/2:-
+    (7+8+4)*(_ɩ_ɩ_+21  -37-1+2        *2*2*2
+    )),stdout-21/37+ὢ  );{;;};        {;;;;}
+
+    ¯ا_(ὢ)_ا¯
+
+    """
+    pass
+
+
+@cli.command()
+@click.argument('path', default=os.getcwd())
+def init(path):
+    """Initialize the directory for use with stac."""
+    # TODO: O ile dobrze pamiętam, ma być potem inny moduł do koniguracji
+    os.makedirs(_stac_path(path), exist_ok=True)
+    with open(_config_path(path), 'w') as configfile:
+        config = configparser.ConfigParser()
+        config['STAC'] = {}
+        config.write(configfile)
+
+
+@cli.command()
+@click.argument('subject', required=False, type=click.INT)
+def list(subject):
+    """List subjects or exercises."""
+    cwd = os.getcwd()
     try:
-        command = sys.argv[1]
-        cwd = os.getcwd()
-        if command == 'init':
-            init(cwd)
-        elif command == 'list':
-            if sys.argv[2] == 'subjects':
-                list_subjects(cwd)
-            else:
-                list_problems(cwd, int(sys.argv[2]))
-
-    # TODO: Przechwytuje również błędy niezwiązane z linią poleceń
-    except IndexError:
-        usage()
-        sys.exit(1)
-
+        if subject is None:
+            list_subjects(cwd)
+        else:
+            list_problems(cwd, subject)
     except requests.exceptions.ConnectionError:
-        _fatal('Connection error!')
-        # TODO: Ogarnąć, czy może moduł requests nie jest w stanie powiedzieć
-        # nam czegoś więcej o tym, co poszło nie tak
+        # TODO: provide more information on failure
+        _fatal('Connection error')
+
+
+if __name__ == '__main__':
+    cli()

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "645fed81ec12634c3cc51381165647c3a98225b0ce2bf3e1a3b490a508e3878f"
+            "sha256": "a4ef4b08895bc2341cdeb0b8a1b8b82c545ce97666adc4b4e7fe526e3cbb4a1a"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -79,6 +79,14 @@
             ],
             "version": "==3.0.4"
         },
+        "click": {
+            "hashes": [
+                "sha256:29f99fc6125fbc931b758dc053b3114e55c77a6e4c6c3a2674a2dc986016381d",
+                "sha256:f15516df478d5a56180fbf80e68f206010e6d160fc39fa508b65e035fd75130b"
+            ],
+            "index": "pypi",
+            "version": "==6.7"
+        },
         "cryptography": {
             "hashes": [
                 "sha256:0f61273eccc681dc5a77dcd517cc2cb74078d1b00adb2b273d0a010153ae43c7",
@@ -100,6 +108,14 @@
                 "sha256:e42b290eb7804d82c6d614b55e3b726dee464099a0e6240175f8d7b682b9295d"
             ],
             "version": "==2.2.1"
+        },
+        "dbus-python": {
+            "hashes": [
+                "sha256:e2f1d6871f74fba23652e51d10873e54f71adab0525833c19bad9e99b1b2f9cc"
+            ],
+            "index": "pypi",
+            "markers": "sys_platform == 'linux'",
+            "version": "==1.2.4"
         },
         "entrypoints": {
             "hashes": [
@@ -141,7 +157,8 @@
             "hashes": [
                 "sha256:3af65c87765323e6f64c83575b05393f9e003431959c9395d1791d51497f29b6"
             ],
-            "markers": "sys_platform == 'linux2' or sys_platform == 'linux'",
+            "index": "pypi",
+            "markers": "sys_platform == 'linux'",
             "version": "==2.3.1"
         },
         "six": {
