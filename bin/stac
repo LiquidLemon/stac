@@ -1,2 +1,3 @@
-#!/bin/bash
-python3 "${BASH_SOURCE%/*}/../stac/stac.py" $@
+#!/bin/sh
+RUNDIR="/$0"; RUNDIR=${RUNDIR%/*}; RUNDIR=${RUNDIR:-.}; RUNDIR=${RUNDIR#/}/
+python3 "${RUNDIR}../stac/stac.py" $@
