@@ -1,2 +1,2 @@
 #!/bin/bash
-python "${BASH_SOURCE%/*}/../stac/stac.py"
+python3 "${BASH_SOURCE%/*}/../stac/stac.py" $@
