@@ -1,4 +1,6 @@
 # 📚 stac
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FLiquidLemon%2Fstac.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FLiquidLemon%2Fstac?ref=badge_shield)
+
 
 STOS Testing and Assessment Client
 
@@ -33,3 +35,7 @@ Use `pycodestyle` to check your code.
 Storing credentials with keyring requires native bindings for dbus. To build
 those you need `dbus-glib` development library. On Ubuntu you can find it in the
 package `libdbus-glib-1-dev`.
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FLiquidLemon%2Fstac.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FLiquidLemon%2Fstac?ref=badge_large)
