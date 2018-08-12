@@ -22,6 +22,7 @@ class Session:
             win_ver = version_pattern.match(platform.win32_ver()[1]).group(0)
             self.user_agent += ' (Windows NT' + win_ver + ')'
 
+        # TODO: use `distro`, this is deprecated and removed in 3.7
         elif platform.system() == 'Linux':
             lx_dist = platform.dist()[0] + ' ' + platform.dist()[1]
             lx_ver = 'Linux ' + platform.release()
